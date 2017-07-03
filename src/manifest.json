@@ -1,0 +1,30 @@
+{
+  "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDcBHwzDvyBQ6bDppkIs9MP4ksKqCMyXQ/A52JivHZKh4YO/9vJsT3oaYhSpDCE9RPocOEQvwsHsFReW2nUEc6OLLyoCFFxIb7KkLGsmfakkut/fFdNJYh0xOTbSN8YvLWcqph09XAY2Y/f0AL7vfO1cuCqtkMt8hFrBGWxDdf9CQIDAQAB",
+  "name": "Firefox WebExtension Local Filesystem Links",
+  "options_ui": {
+    "page": "options.html"
+  },
+  "default_locale": "en",
+  "background": {
+    "page": "background.html",
+    "persistent": false
+  },
+  "browser_action": {
+    "default_popup": "index.html"
+  },
+  "manifest_version": 2,
+  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
+  "web_accessible_resources": ["css/*.css"],
+  "permissions": [
+    "<all_urls>",
+    "file://*/*",
+    "storage",
+    "activeTab",
+    "contextMenus",
+    "notifications",
+    "background",
+    "tabs",
+    "alarms",
+    "nativeMessaging"
+   ]
+}
