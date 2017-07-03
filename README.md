@@ -2,13 +2,13 @@
 
 Todos:
 
-[] add test folder + webserver for test cases (later, for now I'm starting the test server in a separate working copy)
-[] Icon adding not working properly
-[] Native message installer required (later, batch file for development OK)
-[] Check why native messaging is not working at the moment
-[] Create Extension settings page - options.html (uses Vue for view handling)
-[] Add "addon bar" icon to display activity of Extension on current tab
-[] Implement localization
+- [ ] add test folder + webserver for test cases (later, for now I'm starting the test server in a separate working copy)
+- [ ] Icon adding not working properly
+- [ ] Native message installer required (later, batch file for development OK)
+- [ ] Check why native messaging is not working at the moment
+- [ ] Create Extension settings page - options.html (uses Vue for view handling)
+- [ ] Add "addon bar" icon to display activity of Extension on current tab
+- [ ] Implement localization
 
 ## Build Setup
 
