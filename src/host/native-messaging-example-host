@@ -14,6 +14,7 @@ import json
 import urllib
 import subprocess
 import os
+import re
 
 currentOS = sys.platform
 
@@ -39,34 +40,40 @@ def send_message(message):
   sys.stdout.write(message)
   sys.stdout.flush()
 
-print 'test message'
+# print 'test message'
 # Helper for check if path or file exists
 def checkPath(pathStr):
-  pathStr = pathStr.replace('file:///', '')
+  # todo refactor file:// removal --> duplicated code
+  pathStr = re.sub(r'file:[\/\\]{2,3}', '', pathStr) # remove file://
+
   pathStr = urllib.unquote(pathStr).decode('utf8')
   # send_message('{"text": "check: %s"}' % pathStr)
   return os.path.exists(pathStr)
 
+def is_exe(fpath):
+  return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
+
 # Helper for checking if file is exec. returns file if executable
-def which(program):
-  filePath = re.sub(r'file:[\/]{2,3}', '', program) # remove file://
+def getFilePath(program):
+  filePath = re.sub(r'file:[\/\\]{2,3}', '', program) # remove file://
 
-  # send_message('{"text": "check: %s"}' % filePath)
+  filePath = urllib.unquote(filePath) # decode special characters
+  filePath = os.path.normpath(filePath) # normalize slahses
+  # send_message('{"text": "check: %s"}' % urllib.quote(filePath))
+  return filePath
 
-  def is_exe(fpath):
-    return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
-
-  fpath, fname = os.path.split(filePath)
-  if fpath:
-    if is_exe(filePath):
-      return filePath
-  else:
-    for path in os.environ["PATH"].split(os.pathsep):
-      path = path.strip('"')
-      exe_file = os.path.join(path, filePath)
-      if is_exe(exe_file):
-        return exe_file
-  return None
+  # todo - reimplement exe check!!
+  # fpath, fname = os.path.split(filePath)
+  # if fpath:
+  #   if is_exe(filePath):
+  #     return filePath
+  # else:
+  #   for path in os.environ["PATH"].split(os.pathsep):
+  #     path = path.strip('"')
+  #     exe_file = os.path.join(path, filePath)
+  #     if is_exe(exe_file):
+  #       return exe_file
+  # return None
 
 # Thread that reads messages from the webapp.
 def read_thread_func(queue):
@@ -89,28 +96,33 @@ def read_thread_func(queue):
     data = json.loads(text)
     # self.log('starting %s' % filename['text'])
     fileStr = data['url']
-    # send_message('{"starting": "%s"}' % fileStr)
     reveal = data['reveal']
+    # send_message('{"revealing?": "%s"}' % reveal)
 
     exeAllowed = data['exeAllowed']
 
     if (checkPath(fileStr)):
+      # send_message('{"openingFile": "%s"}' % fileStr )
+      result = getFilePath(fileStr)
       if (reveal):
-        subprocess.Popen(r'explorer /select,"%s"' % fileStr)
-        # send_message('{"text": "select folder & select file %s"}' % fileStr)
-      else:
-        # testStr = os.path.normpath(fileStr)
-        # if not (os.stat(fileStr)['ST_MODE'] & (S_IXUSR|S_IXGRP|S_IXOTH)) and exeAllowed:
-        # testStr = fileStr.replace('file:///', '')
+        revealCommand = r'explorer /select,"%s"' % result
+        subprocess.call(revealCommand)
+        # test = result
+        send_message('{"text": "select folder & select file %s"}' % urllib.quote(revealCommand))
 
-        # if (!os.access(testStr, os.X_OK)):
-        # if which(fileStr) is None:
-          # is not a executable --> probably removing .exe in Windows could still execute (test neeeded)
-        result = which(fileStr)
-        send_message('{"stat": "%s"}' % result)
-
-        os.startfile(fileStr) # todo add try catch if file can't be opened
         # send_message('{"error": %s }' % "null")
+      else:
+        # send_message('{"stat": "%s"}' % fileStr)
+        # result = fileStr
+        # if (result is not None):
+        # os.startfile(result) # todo add try catch if file can't be opened
+        subprocess.call(r'explorer %s' % result)
+        # send_message('{"stat": "%s"}' %  urllib.quote(result))
+
+        send_message('{"error": %s }' % "null")
+
+        # else:
+        #   send_message('{"error": %s }' % "ERROR_BAD_LINK")
         # else:
         #   if exeAllowed:
         #     os.startfile(fileStr) # todo add try catch if file can't be opened
@@ -118,9 +130,9 @@ def read_thread_func(queue):
         #     send_message('{"error": %s }' % "ERROR_EXECTUBALES_NOT_ENABLED")
     else:
       if (reveal):
-        fileStr = os.path.split(fileStr)
-        # send_message('{"text": "opening folder %s"}' % fileStr[0])
-        subprocess.Popen(r'explorer "%s"' % fileStr[0])
+        revealPath = os.path.dirname(fileStr)
+        send_message('{"text": "opening folder %s"}' % urllib.quote(revealPath))
+        subprocess.call(r'explorer "%s"' % revealPath)
         send_message('{"error": %s }' % "null")
       else:
         send_message('{"error": "%s" }' % "ERROR_BAD_LINK")

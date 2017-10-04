@@ -12,7 +12,7 @@ console.log(process.env.BROWSER)
 const manifestAdditionsFF = {
   "applications": {
     "gecko": {
-      "id": "demo-webpack-vue@example.com"
+      "id": "webextension_local_filesystem_links@example.org"
     }
   }
 };
@@ -86,7 +86,7 @@ module.exports = {
         from: 'src/static'
       },
       // {output}/file.txt
-      { 
+      {
         from: 'src/manifest.json',
         transform: function(content, path) {
           // add description & version from package.json

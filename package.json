@@ -1,6 +1,6 @@
 {
-  "name": "chrome-extension-vue",
-  "description": "A Vue.js project",
+  "name": "webextension-local-filesystem-links",
+  "description": "Webextension to open local filesystem links file://...",
   "version": "0.99.46",
   "author": "AWolf81 <awolf2904@gmail.com>",
   "private": true,

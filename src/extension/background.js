@@ -68,22 +68,23 @@ chrome.runtime.onMessage.addListener(
 
     console.log("reveal", request.reveal ? 1 : 0);
     var uri = request.url;
-    // notify('link clicked', 'url: ' + request.url);
+    notify('link clicked', 'url: ' + request.url);
     // if (request.greeting == "hello") {
     //   sendResponse({farewell: "goodbye"});
     //   // return true;
     // }
     // sendNativeMessage(request.url); // with open connection
 
-    console.log(chrome.runtime.sendNativeMessage);
+    console.log({"url": uri, "reveal": request.reveal, "exeAllowed": 0});
     // chrome.extension.sendNativeMessage( // direct sending --> opens port to native app
     chrome.runtime.sendNativeMessage( // direct sending --> opens port to native app
-      "com.google.chrome.example.echo",
+      "webextension_local_filesystem_links",
     //   {"url": request.url, "reveal": request.reveal ? 1 : 0, "exeAllowed": 0},
-      {"url": uri, "reveal": request.reveal ? 1 : 0, "exeAllowed": 0},
+      {"url": uri, "reveal": request.reveal, "exeAllowed": 0},
+      // {"url": uri, "reveal": 0, "exeAllowed": 0},
       function(response) {
           console.log("Received response - ", response);
-          if (response && response.error !== null) {
+          if (response && response.error) {
             notify('Errror', chrome.i18n.getMessage(response.error)); // only NotFound error at the moment
           }
       });
@@ -146,7 +147,7 @@ function onDisconnected() {
 }
 
 function connect() {
-  var hostName = "com.google.chrome.example.echo";
+  var hostName = "webextension-local-filesystem-links";
   // appendMessage("Connecting to native messaging host <b>" + hostName + "</b>")
   console.log("Connecting to native messaging host <b>" + hostName + "</b>")
   port = chrome.runtime.connectNative(hostName);

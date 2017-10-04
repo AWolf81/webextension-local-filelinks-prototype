@@ -145,7 +145,7 @@
                 message: 'hello',
                 url: link, //decodeURIComponent(this.href),
                 reveal: options.revealOpenOption == 'O' ? true : false
-            }, function(response) {
+            }).then(function(response) {
             console.log(response);
         });
     }
